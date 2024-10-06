@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.TankDrive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,7 +39,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_xrpDrivetrain.setDefaultCommand(new ArcadeDrive(m_xrpDrivetrain, () -> m_controller.getLeftY(), () -> m_controller.getRightX()));
+    m_xrpDrivetrain.setDefaultCommand(new TankDrive(m_xrpDrivetrain, () -> m_controller.getLeftY(), () -> m_controller.getRightY()));
   }
 
   /**
