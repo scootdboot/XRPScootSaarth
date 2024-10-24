@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.XRPDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 
 import frc.robot.commands.TankDrive;
@@ -18,35 +19,39 @@ import frc.robot.commands.TankDrive;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
-  private final CommandPS4Controller m_controller = new CommandPS4Controller(0);
+  	// The robot's subsystems and commands are defined here...
+  	private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
+  	private final CommandPS4Controller m_controller = new CommandPS4Controller(0);
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_xrpDrivetrain);
+  	private final ExampleCommand m_autoCommand = new ExampleCommand(m_xrpDrivetrain);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+  	/** The container for the robot. Contains subsystems, OI devices, and commands. */
+  	public RobotContainer() {
+    	// Configure the button bindings
+    	configureButtonBindings();
+  	}
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    m_xrpDrivetrain.setDefaultCommand(new TankDrive(m_xrpDrivetrain, () -> m_controller.getLeftY(), () -> m_controller.getRightY()));
-  }
+  	/**
+   	* Use this method to define your button->command mappings. Buttons can be created by
+   	* instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
+   	* edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   	* edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   	*/
+  	private void configureButtonBindings() {
+    	m_xrpDrivetrain.setDefaultCommand(getDriveCommand());
+  	}
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
-  }
+  	/**
+   	* Use this to pass the autonomous command to the main {@link Robot} class.
+   	*
+   	* @return the command to run in autonomous
+   	*/
+  	public Command getAutonomousCommand() {
+    	// An ExampleCommand will run in autonomous
+    	return m_autoCommand;
+  	}
+
+	public Command getDriveCommand() {
+		return Commands.run(() -> m_xrpDrivetrain.tankDrive(-m_controller.getLeftY(), -m_controller.getRightY()), m_xrpDrivetrain);
+	}
 }
