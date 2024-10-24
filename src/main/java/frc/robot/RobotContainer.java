@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.XRPDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.TankDrive;
@@ -22,7 +22,7 @@ import frc.robot.commands.TankDrive;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
-  private final CommandXboxController m_controller = new CommandXboxController(0);
+  private final CommandPS4Controller m_controller = new CommandPS4Controller(0);
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_xrpDrivetrain);
 
