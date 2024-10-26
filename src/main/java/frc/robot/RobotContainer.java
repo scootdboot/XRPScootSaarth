@@ -4,7 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.commands.BeginnerAuton;
+import frc.robot.auton.AutonChooser;
+import frc.robot.auton.AutonFactory;
+import frc.robot.auton.AutonChooser.AutonOption;
 import frc.robot.subsystems.XRPDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,12 +23,12 @@ public class RobotContainer {
     private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
     private final CommandPS4Controller m_controller = new CommandPS4Controller(0);
 
-    private final Command m_autoCommand = new BeginnerAuton(m_xrpDrivetrain);
-
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
+        mapAutonOptions();
+        AutonChooser.putChooser();
     }
 
     /**
@@ -39,21 +41,21 @@ public class RobotContainer {
         m_xrpDrivetrain.setDefaultCommand(getDriveCommand());
     }
 
+    private void mapAutonOptions() {
+        AutonChooser.mapAutonCommand(AutonOption.DO_NOTHING, Commands.runOnce(() -> System.out.println("DO_NOTHING")));
+        AutonChooser.mapAutonCommand(AutonOption.FIRST_AUTON, AutonFactory.firstAuton(m_xrpDrivetrain));
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return m_autoCommand;
+        return AutonChooser.getSelectedAuton();
     }
 
     public Command getDriveCommand() {
         return Commands.run(() -> m_xrpDrivetrain.tankDrive(-m_controller.getLeftY(), -m_controller.getRightY()), m_xrpDrivetrain);
-    }
-
-    public XRPDrivetrain getDrivetrain() {
-        return m_xrpDrivetrain;
     }
 }

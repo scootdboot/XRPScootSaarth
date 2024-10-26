@@ -56,6 +56,10 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
+        // TO ADD AN AUTON OPTION
+        // Define it in AutonFactory
+        // Add it as an AutonOption in AutonChooser
+        // Call the mapCommand with the subsytems in RobotContainer
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
