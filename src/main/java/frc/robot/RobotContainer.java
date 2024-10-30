@@ -7,10 +7,12 @@ package frc.robot;
 import frc.robot.auton.AutonChooser;
 import frc.robot.auton.AutonFactory;
 import frc.robot.auton.AutonChooser.AutonOption;
+import frc.robot.subsystems.XRPArm;
 import frc.robot.subsystems.XRPDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,7 +23,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
-    private final CommandPS4Controller m_controller = new CommandPS4Controller(0);
+    private final XRPArm m_xrpArm = new XRPArm();
+    private final CommandXboxController m_controller = new CommandXboxController(0);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -39,6 +42,7 @@ public class RobotContainer {
     */
     private void configureButtonBindings() {
         m_xrpDrivetrain.setDefaultCommand(getDriveCommand());
+        m_xrpArm.setDefaultCommand(getArmCommand());
     }
 
     private void mapAutonOptions() {
@@ -57,5 +61,9 @@ public class RobotContainer {
 
     public Command getDriveCommand() {
         return Commands.run(() -> m_xrpDrivetrain.tankDrive(-m_controller.getLeftY(), -m_controller.getRightY()), m_xrpDrivetrain);
+    }
+
+    public Command getArmCommand() {
+        return Commands.run(() -> m_xrpArm.setAngle(m_controller.getRightTriggerAxis()*90), m_xrpArm);
     }
 }
