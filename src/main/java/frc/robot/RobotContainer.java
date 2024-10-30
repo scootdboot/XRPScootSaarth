@@ -46,7 +46,8 @@ public class RobotContainer {
     }
 
     private void mapAutonOptions() {
-        AutonChooser.mapAutonCommand(AutonOption.DO_NOTHING, Commands.runOnce(() -> System.out.println("DO_NOTHING")));
+        AutonChooser.mapAutonCommand(AutonOption.DO_NOTHING,
+            Commands.runOnce(() -> System.out.println("DO_NOTHING")).withName("DO_NOTHING"));
         AutonChooser.mapAutonCommand(AutonOption.FIRST_AUTON, AutonFactory.firstAuton(m_xrpDrivetrain));
     }
 
@@ -64,6 +65,7 @@ public class RobotContainer {
     }
 
     public Command getArmCommand() {
-        return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis);
+        return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis, 
+            m_controller.a());
     }
 }

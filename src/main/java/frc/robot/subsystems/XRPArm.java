@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.xrp.XRPServo;
@@ -15,10 +16,18 @@ public class XRPArm extends SubsystemBase {
         return Commands.run(() -> xrpArm.setAngle(trigger.getAsDouble()*135), xrpArm);
     }
 
-    public static Command getTriggersMoveArm(XRPArm xrpArm, DoubleSupplier leftTrigger, DoubleSupplier rightTrigger) {
+    public static Command getTriggersMoveArm(XRPArm xrpArm, DoubleSupplier lowerSpeed, DoubleSupplier raiseSpeed, BooleanSupplier slowButton) {
         final double maxMoveSpeed = Constants.Arm.maxTriggerMoveSpeed;
+        final double preciseMoveSpeed = Constants.Arm.preciseTriggerMoveSpeed;
         return Commands.run(() -> xrpArm.setAngle(
-            Math.max(Math.min(xrpArm.getAngle() - rightTrigger.getAsDouble()*maxMoveSpeed + leftTrigger.getAsDouble()*maxMoveSpeed, 135), 0)), xrpArm);
+            Math.max(
+                Math.min(xrpArm.getAngle() - raiseSpeed.getAsDouble()*(slowButton.getAsBoolean() ? preciseMoveSpeed : maxMoveSpeed)
+                 + lowerSpeed.getAsDouble()*(slowButton.getAsBoolean() ? preciseMoveSpeed : maxMoveSpeed), 135), 0)
+            ), xrpArm);
+    }
+
+    public static Command getTriggersMoveArm(XRPArm xrpArm, DoubleSupplier lowerSpeed, DoubleSupplier raiseSpeed) {
+        return getTriggersMoveArm(xrpArm, lowerSpeed, raiseSpeed, () -> false);
     }
 
     public XRPArm(int port) {
