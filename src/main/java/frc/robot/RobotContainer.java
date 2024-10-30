@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
-    private final XRPArm m_xrpArm = new XRPArm();
+    private final XRPArm m_xrpArm = new XRPArm(4);
     private final CommandXboxController m_controller = new CommandXboxController(0);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -64,6 +64,6 @@ public class RobotContainer {
     }
 
     public Command getArmCommand() {
-        return Commands.run(() -> m_xrpArm.setAngle(m_controller.getRightTriggerAxis()*90), m_xrpArm);
+        return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis);
     }
 }

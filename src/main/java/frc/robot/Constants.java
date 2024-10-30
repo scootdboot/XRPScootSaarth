@@ -14,6 +14,6 @@ package frc.robot;
  */
 public final class Constants {
     public static final class Arm {
-        public static final int port = 4;
+        public static double maxTriggerMoveSpeed = 45; // rot per sec
     }
 }
