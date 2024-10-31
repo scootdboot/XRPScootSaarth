@@ -9,6 +9,7 @@ import frc.robot.auton.AutonFactory;
 import frc.robot.auton.AutonChooser.AutonOption;
 import frc.robot.subsystems.XRPArm;
 import frc.robot.subsystems.XRPDrivetrain;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -23,8 +24,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
+
     private final XRPArm m_xrpArm = new XRPArm(4);
+
     private final CommandXboxController m_controller = new CommandXboxController(0);
+
+    private final AnalogInput m_leftReflectanceSensor = new AnalogInput(0);
+
+    private final AnalogInput m_rightReflectanceSensor = new AnalogInput(1);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -49,6 +56,7 @@ public class RobotContainer {
         AutonChooser.mapAutonCommand(AutonOption.DO_NOTHING,
             Commands.runOnce(() -> System.out.println("DO_NOTHING")).withName("DO_NOTHING"));
         AutonChooser.mapAutonCommand(AutonOption.FIRST_AUTON, AutonFactory.firstAuton(m_xrpDrivetrain));
+        AutonChooser.mapAutonCommand(AutonOption.BLACK_LINE_AUTON, AutonFactory.blackLineSensorAuton(m_xrpDrivetrain, m_leftReflectanceSensor, m_rightReflectanceSensor));
     }
 
     /**
@@ -67,5 +75,10 @@ public class RobotContainer {
     public Command getArmCommand() {
         return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis, 
             m_controller.a());
+    }
+
+    public Command getLineSensorTestCommand() {
+        return Commands.run(() -> System.out.println("L: " + m_leftReflectanceSensor.getVoltage() + "V, R: " 
+            + m_rightReflectanceSensor.getVoltage() + "V"));
     }
 }

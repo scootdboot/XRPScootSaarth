@@ -7,12 +7,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * Static class
+ * 
  */
-public class AutonChooser {
+public abstract class AutonChooser {
     public enum AutonOption {
         DO_NOTHING("Do nothing"),
-        FIRST_AUTON("First auton");
+        FIRST_AUTON("First auton"),
+        BLACK_LINE_AUTON("Black line auton");
 
         private String m_name;
 
