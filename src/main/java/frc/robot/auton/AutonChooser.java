@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class AutonChooser {
     public enum AutonOption {
         DO_NOTHING("Do nothing"),
-        FIRST_AUTON("First auton");
+        FIRST_AUTON("First auton"),
+        TEST("Test");
 
         private String m_name;
 
