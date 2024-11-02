@@ -24,10 +24,5 @@ public class AutonFactory {
         ).withName("First Auton");
 
     }
-    static AnalogInput sensed = new AnalogInput(1);
-
-    public static Command test(XRPDrivetrain xrpDrivetrain) {
-        return Commands.run(() -> sensed.getValue());
-    }
 
 }
