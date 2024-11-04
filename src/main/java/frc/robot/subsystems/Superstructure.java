@@ -24,7 +24,7 @@ public class Superstructure {
     private final Trigger stateTrg_movingForwardBeforeLine = 
         new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_BEFORE_LINE);
     private final Trigger stateTrg_spinning = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.SPINNING);
-    private final Trigger stateTrg_movingFowardAfterLine =
+    private final Trigger stateTrg_movingForwardAfterLine =
         new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_AFTER_LINE);
 
     // this defines the reflectance sensors
@@ -34,8 +34,9 @@ public class Superstructure {
     private final Trigger trg_reflectanceSensorSeesBlack;
     private final Trigger trg_finishFirstMovement;
 
-    // defined here because it is a button in the constructor!
-    private final Trigger trg_finishSpin;
+    // all triggers here rely on things in the constructor (things that must be passed to the superstructure
+    // from the robot container)
+    private final Trigger trg_finishSpin, trg_finishFinalMovement;
 
     // TODO: UNDO SEE BLACK FUCKERY
     public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpinButton, Trigger seeBlackButton) {
@@ -46,6 +47,7 @@ public class Superstructure {
         trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop, seeBlackButton);
         // we should not need to mess with this in here after we are able to get an xrp with a working sensor
         trg_finishFirstMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForwardBeforeLine));
+        trg_finishFinalMovement = new Trigger(m_stateUpdateEventLoop, finishSpinButton.negate().and(stateTrg_movingForwardAfterLine));
 
         configureTriggerBindings();
 
@@ -70,7 +72,12 @@ public class Superstructure {
         trg_finishSpin.onTrue(
             Commands.runOnce(() -> m_currentState = xrpState.MOVING_AFTER_LINE)
         );
+        trg_finishFinalMovement.onTrue(
+            Commands.runOnce(() -> m_currentState = xrpState.IDLE)
+        );
 
+        // below this point everything should actually get handled based on what
+        // state the robot is in - everything about should just handle changing between states
         // TODO: CHECK IF THIS ACTUALLY CONSISTENTLY MOVES FOWARD
         stateTrg_movingForwardBeforeLine.onTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 0))
@@ -81,6 +88,12 @@ public class Superstructure {
         // TODO: CHECK IF THIS ACTUALLY SPINS PROPERLY
         stateTrg_spinning.onTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 1))
+        ).onFalse(
+            Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
+        );
+
+        stateTrg_movingForwardAfterLine.onTrue(
+            Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 0))
         ).onFalse(
             Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
         );
