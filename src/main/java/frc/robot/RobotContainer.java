@@ -70,4 +70,8 @@ public class RobotContainer {
         return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis, 
             m_controller.a());
     }
+
+    public void startSuperstructure() {
+        m_superstructure.start();
+    }
 }

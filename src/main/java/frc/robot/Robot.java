@@ -65,6 +65,8 @@ public class Robot extends TimedRobot {
         // is so highly specialized
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+        m_robotContainer.startSuperstructure();
+
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
