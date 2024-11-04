@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.auton.AutonChooser;
 import frc.robot.auton.AutonFactory;
 import frc.robot.auton.AutonChooser.AutonOption;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.XRPArm;
 import frc.robot.subsystems.XRPDrivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +25,10 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final XRPDrivetrain m_xrpDrivetrain = new XRPDrivetrain();
     private final XRPArm m_xrpArm = new XRPArm(4);
+    
     private final CommandXboxController m_controller = new CommandXboxController(0);
+
+    private final Superstructure m_superstructure = new Superstructure(m_xrpArm, m_xrpDrivetrain, m_controller.a());
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -46,9 +50,7 @@ public class RobotContainer {
     }
 
     private void mapAutonOptions() {
-        AutonChooser.mapAutonCommand(AutonOption.DO_NOTHING,
-            Commands.runOnce(() -> System.out.println("DO_NOTHING")).withName("DO_NOTHING"));
-        AutonChooser.mapAutonCommand(AutonOption.FIRST_AUTON, AutonFactory.firstAuton(m_xrpDrivetrain));
+        
     }
 
     /**

@@ -17,4 +17,8 @@ public final class Constants {
         public static final double maxTriggerMoveSpeed = 45; // degrees per 20 ms
         public static final double preciseTriggerMoveSpeed = 10; // degrees per 20 ms
     }
+
+    public static final class LineSensors {
+        public static final double blackThreshold = 4; // V
+    }
 }

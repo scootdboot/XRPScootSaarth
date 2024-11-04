@@ -60,6 +60,9 @@ public class Robot extends TimedRobot {
         // Define it in AutonFactory
         // Add it as an AutonOption in AutonChooser
         // Call the mapCommand with the subsytems in RobotContainer
+
+        // WARNING: autonomous might not work properly while the state machine
+        // is so highly specialized
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
