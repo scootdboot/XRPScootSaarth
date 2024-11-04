@@ -17,28 +17,35 @@ public class Superstructure {
     private final EventLoop m_stateTrgEventLoop = new EventLoop();
     private final EventLoop m_stateUpdateEventLoop = new EventLoop();
 
+    // these are triggers that activate when different states are active
+    // they are just convenient because we can AND together other triggers
+    // and these so specific things only happen in specific states
     private final Trigger stateTrg_idle = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.IDLE);
-    private final Trigger stateTrg_movingForward = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_FOWARD);
+    private final Trigger stateTrg_movingForwardBeforeLine = 
+        new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_BEFORE_LINE);
     private final Trigger stateTrg_spinning = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.SPINNING);
+    private final Trigger stateTrg_movingFowardAfterLines =
+        new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_AFTER_LINE);
 
     // this defines the reflectance sensors
     private final AnalogInput m_leftReflectanceSensor = new AnalogInput(0);
     private final AnalogInput m_rightReflectanceSensor = new AnalogInput(1);
     // this is a trigger which essentially goes true when the reflectance sensors see black
     private final Trigger trg_reflectanceSensorSeesBlack;
-    private final Trigger trg_finishMovement;
+    private final Trigger trg_finishFirstMovement;
 
     // defined here because it is a button in the constructor!
     private final Trigger trg_finishSpin;
 
     // TODO: UNDO SEE BLACK FUCKERY
-    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpin, Trigger seeBlack) {
+    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpinButton, Trigger seeBlackButton) {
         m_xrpArm = xrpArm;
         m_xrpDrivetrain = xrpDrivetrain;
 
-        trg_finishSpin = new Trigger(m_stateUpdateEventLoop, finishSpin.and(stateTrg_spinning));
-        trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop, seeBlack);
-        trg_finishMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForward));
+        trg_finishSpin = new Trigger(m_stateUpdateEventLoop, finishSpinButton.and(stateTrg_spinning));
+        trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop, seeBlackButton);
+        // we should not need to mess with this in here after we are able to get an xrp with a working sensor
+        trg_finishFirstMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForwardBeforeLine));
 
         configureTriggerBindings();
 
@@ -47,18 +54,25 @@ public class Superstructure {
 
     public void start() {
         if (stateTrg_idle.getAsBoolean()) {
-            m_currentState = xrpState.MOVING_FOWARD;
+            m_currentState = xrpState.MOVING_BEFORE_LINE;
         }
 
         System.out.println("superstructure kickstart");
     }
 
     private void configureTriggerBindings() {
-        trg_finishMovement.onTrue(increaseState());
-        trg_finishSpin.onTrue(increaseState());
+        // these ones should always check that they are in the correct state
+        // before activating as they will not check here - it will just
+        // set state to their following state
+        trg_finishFirstMovement.onTrue(
+            Commands.runOnce(() -> m_currentState = xrpState.SPINNING)
+        );
+        trg_finishSpin.onTrue(
+            Commands.runOnce(() -> m_currentState = xrpState.MOVING_AFTER_LINE)
+        );
 
         // TODO: CHECK IF THIS ACTUALLY CONSISTENTLY MOVES FOWARD
-        stateTrg_movingForward.onTrue(
+        stateTrg_movingForwardBeforeLine.onTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 0))
         ).onFalse(
             Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
@@ -72,23 +86,10 @@ public class Superstructure {
         );
     }
 
-    private Command increaseState() {
-        return Commands.runOnce(() -> {
-            switch (m_currentState) {
-                case IDLE:
-                    m_currentState = xrpState.MOVING_FOWARD;
-                    break;
-                case MOVING_FOWARD:
-                    m_currentState = xrpState.SPINNING;
-                    break;
-                case SPINNING:
-                    m_currentState = xrpState.IDLE;
-            }
-        }
-        );
-    }
-
     public void fastPeriodic() {
+        // remember that this update order could cause issues!
+        // if you see anything really weird it could be that
+        // this isn't updated in an order that works
         m_sensorEventLoop.poll();
         m_stateTrgEventLoop.poll();
         m_stateUpdateEventLoop.poll();
@@ -96,8 +97,9 @@ public class Superstructure {
 
     private enum xrpState {
         IDLE(0),
-        MOVING_FOWARD(1),
-        SPINNING(2);
+        MOVING_BEFORE_LINE(1),
+        SPINNING(2),
+        MOVING_AFTER_LINE(3);
         
         private final int m_idx;
 
