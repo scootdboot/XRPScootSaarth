@@ -28,7 +28,7 @@ public class RobotContainer {
     
     private final CommandXboxController m_controller = new CommandXboxController(0);
 
-    private final Superstructure m_superstructure = new Superstructure(m_xrpArm, m_xrpDrivetrain, m_controller.a());
+    private final Superstructure m_superstructure = new Superstructure(m_xrpArm, m_xrpDrivetrain, m_controller.a(), m_controller.b());
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

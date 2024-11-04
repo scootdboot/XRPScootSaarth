@@ -25,18 +25,20 @@ public class Superstructure {
     private final AnalogInput m_leftReflectanceSensor = new AnalogInput(0);
     private final AnalogInput m_rightReflectanceSensor = new AnalogInput(1);
     // this is a trigger which essentially goes true when the reflectance sensors see black
-    private final Trigger trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop,
-        () -> (m_leftReflectanceSensor.getVoltage() + m_rightReflectanceSensor.getVoltage()) / 2 > Constants.LineSensors.blackThreshold);
-    private final Trigger trg_finishMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForward));
+    private final Trigger trg_reflectanceSensorSeesBlack;
+    private final Trigger trg_finishMovement;
 
     // defined here because it is a button in the constructor!
     private final Trigger trg_finishSpin;
 
-    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpin) {
+    // TODO: UNDO SEE BLACK FUCKERY
+    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpin, Trigger seeBlack) {
         m_xrpArm = xrpArm;
         m_xrpDrivetrain = xrpDrivetrain;
 
         trg_finishSpin = new Trigger(m_stateUpdateEventLoop, finishSpin.and(stateTrg_spinning));
+        trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop, seeBlack);
+        trg_finishMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForward));
 
         configureTriggerBindings();
 
