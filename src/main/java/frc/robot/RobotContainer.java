@@ -47,6 +47,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
         m_xrpDrivetrain.setDefaultCommand(getDriveCommand());
         m_xrpArm.setDefaultCommand(getArmCommand());
+
+        // a button is for state machine
+        // b button is temporary for state machine
+        // y button is arm slow button
     }
 
     private void mapAutonOptions() {
@@ -68,7 +72,7 @@ public class RobotContainer {
 
     public Command getArmCommand() {
         return XRPArm.getTriggersMoveArm(m_xrpArm, m_controller::getLeftTriggerAxis, m_controller::getRightTriggerAxis, 
-            m_controller.a());
+            m_controller.y());
     }
 
     public void startSuperstructure() {
