@@ -24,7 +24,7 @@ public class Superstructure {
     private final Trigger stateTrg_movingForwardBeforeLine = 
         new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_BEFORE_LINE);
     private final Trigger stateTrg_spinning = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.SPINNING);
-    private final Trigger stateTrg_movingFowardAfterLines =
+    private final Trigger stateTrg_movingFowardAfterLine =
         new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_AFTER_LINE);
 
     // this defines the reflectance sensors
