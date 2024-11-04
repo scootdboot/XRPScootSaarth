@@ -74,4 +74,8 @@ public class RobotContainer {
     public void startSuperstructure() {
         m_superstructure.start();
     }
+
+    public Runnable superstructureFastPeriodic() {
+        return m_superstructure::fastPeriodic;
+    }
 }

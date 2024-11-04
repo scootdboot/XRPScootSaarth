@@ -44,8 +44,8 @@ public class Superstructure {
     }
 
     public void start() {
-        if (m_currentState == xrpState.IDLE) {
-            increaseState();
+        if (stateTrg_idle.getAsBoolean()) {
+            m_currentState = xrpState.MOVING_FOWARD;
         }
 
         System.out.println("superstructure kickstart");
@@ -84,6 +84,12 @@ public class Superstructure {
             }
         }
         );
+    }
+
+    public void fastPeriodic() {
+        m_sensorEventLoop.poll();
+        m_stateTrgEventLoop.poll();
+        m_stateUpdateEventLoop.poll();
     }
 
     private enum xrpState {
