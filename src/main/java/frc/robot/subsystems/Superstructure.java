@@ -39,12 +39,16 @@ public class Superstructure {
         trg_finishSpin = new Trigger(m_stateUpdateEventLoop, finishSpin.and(stateTrg_spinning));
 
         configureTriggerBindings();
+
+        System.out.println("construct superstructure");
     }
 
     public void start() {
         if (m_currentState == xrpState.IDLE) {
             increaseState();
         }
+
+        System.out.println("superstructure kickstart");
     }
 
     private void configureTriggerBindings() {
