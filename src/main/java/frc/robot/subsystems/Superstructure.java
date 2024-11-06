@@ -60,6 +60,7 @@ public class Superstructure {
         }
 
         System.out.println("superstructure kickstart");
+        printState().schedule();
     }
 
     private void configureTriggerBindings() {
@@ -79,20 +80,24 @@ public class Superstructure {
         // below this point everything should actually get handled based on what
         // state the robot is in - everything about should just handle changing between states
         // TODO: CHECK IF THIS ACTUALLY CONSISTENTLY MOVES FOWARD
-        stateTrg_movingForwardBeforeLine.onTrue(
+        stateTrg_idle.whileTrue(
+            Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
+        );
+
+        stateTrg_movingForwardBeforeLine.whileTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 0))
         ).onFalse(
             Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
         );
 
         // TODO: CHECK IF THIS ACTUALLY SPINS PROPERLY
-        stateTrg_spinning.onTrue(
+        stateTrg_spinning.whileTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 1))
         ).onFalse(
             Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
         );
 
-        stateTrg_movingForwardAfterLine.onTrue(
+        stateTrg_movingForwardAfterLine.whileTrue(
             Commands.run(() -> m_xrpDrivetrain.arcadeDrive(1, 0))
         ).onFalse(
             Commands.runOnce(() -> m_xrpDrivetrain.arcadeDrive(0, 0))
@@ -106,6 +111,25 @@ public class Superstructure {
         m_sensorEventLoop.poll();
         m_stateTrgEventLoop.poll();
         m_stateUpdateEventLoop.poll();
+    }
+
+    public Command printState() {
+        return Commands.run(() -> {
+            if (stateTrg_idle.getAsBoolean() && stateTrg_movingForwardAfterLine.getAsBoolean()) {
+                System.out.println("we found the issue");
+            }
+            if (stateTrg_idle.getAsBoolean()) {
+                System.out.println("idle");
+            } else if (stateTrg_movingForwardBeforeLine.getAsBoolean()) {
+                System.out.println("moving before line");
+            } else if (stateTrg_spinning.getAsBoolean()) {
+                System.out.println("spinning");
+            } else if (stateTrg_movingForwardAfterLine.getAsBoolean()) {
+                System.out.println("moving after line");
+            } else {
+                System.out.println("gang what the fuck");
+            }
+        });
     }
 
     private enum xrpState {

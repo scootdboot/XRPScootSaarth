@@ -67,7 +67,7 @@ public class RobotContainer {
     }
 
     public Command getDriveCommand() {
-        return Commands.run(() -> m_xrpDrivetrain.tankDrive(-m_controller.getLeftY(), -m_controller.getRightY()), m_xrpDrivetrain);
+        return Commands.run(() -> m_xrpDrivetrain.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX()), m_xrpDrivetrain);
     }
 
     public Command getArmCommand() {

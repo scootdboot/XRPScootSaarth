@@ -3,13 +3,6 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
-    },
-    "windows": {
-      "/SmartDashboard/SendableChooser[0]": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables": {
