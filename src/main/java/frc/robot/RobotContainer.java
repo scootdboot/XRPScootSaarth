@@ -28,7 +28,7 @@ public class RobotContainer {
     
     private final CommandXboxController m_controller = new CommandXboxController(0);
 
-    private final Superstructure m_superstructure = new Superstructure(m_xrpArm, m_xrpDrivetrain, m_controller.a(), m_controller.b());
+    private final Superstructure m_superstructure = new Superstructure(m_xrpArm, m_xrpDrivetrain, m_controller.a());
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -49,7 +49,6 @@ public class RobotContainer {
         m_xrpArm.setDefaultCommand(getArmCommand());
 
         // a button is for state machine
-        // b button is temporary for state machine
         // y button is arm slow button
     }
 

@@ -19,6 +19,6 @@ public final class Constants {
     }
 
     public static final class LineSensors {
-        public static final double blackThreshold = 4; // V
+        public static final double blackThreshold = 4.5; // V
     }
 }

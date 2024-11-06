@@ -31,22 +31,20 @@ public class Superstructure {
     private final AnalogInput m_leftReflectanceSensor = new AnalogInput(0);
     private final AnalogInput m_rightReflectanceSensor = new AnalogInput(1);
     // this is a trigger which essentially goes true when the reflectance sensors see black
-    private final Trigger trg_reflectanceSensorSeesBlack;
-    private final Trigger trg_finishFirstMovement;
+    private final Trigger trg_reflectanceSensorSeesBlack =
+         new Trigger(m_sensorEventLoop, () -> (m_leftReflectanceSensor.getVoltage() + m_rightReflectanceSensor.getVoltage()) / 2 > Constants.LineSensors.blackThreshold);
+    private final Trigger trg_finishFirstMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForwardBeforeLine));
 
     // all triggers here rely on things in the constructor (things that must be passed to the superstructure
     // from the robot container)
     private final Trigger trg_finishSpin, trg_finishFinalMovement;
 
     // TODO: UNDO SEE BLACK FUCKERY
-    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpinButton, Trigger seeBlackButton) {
+    public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpinButton) {
         m_xrpArm = xrpArm;
         m_xrpDrivetrain = xrpDrivetrain;
 
         trg_finishSpin = new Trigger(m_stateUpdateEventLoop, finishSpinButton.and(stateTrg_spinning));
-        trg_reflectanceSensorSeesBlack = new Trigger(m_sensorEventLoop, seeBlackButton);
-        // we should not need to mess with this in here after we are able to get an xrp with a working sensor
-        trg_finishFirstMovement = new Trigger(m_stateUpdateEventLoop, trg_reflectanceSensorSeesBlack.and(stateTrg_movingForwardBeforeLine));
         trg_finishFinalMovement = new Trigger(m_stateUpdateEventLoop, finishSpinButton.negate().and(stateTrg_movingForwardAfterLine));
 
         configureTriggerBindings();
@@ -58,9 +56,6 @@ public class Superstructure {
         if (stateTrg_idle.getAsBoolean()) {
             m_currentState = xrpState.MOVING_BEFORE_LINE;
         }
-
-        System.out.println("superstructure kickstart");
-        printState().schedule();
     }
 
     private void configureTriggerBindings() {
