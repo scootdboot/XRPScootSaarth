@@ -9,6 +9,9 @@ import frc.robot.auton.AutonFactory;
 import frc.robot.auton.AutonChooser.AutonOption;
 import frc.robot.subsystems.XRPArm;
 import frc.robot.subsystems.XRPDrivetrain;
+
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -78,7 +81,7 @@ public class RobotContainer {
     }
 
     public Command getLineSensorTestCommand() {
-        return Commands.run(() -> System.out.println("L: " + m_leftReflectanceSensor.getVoltage() + "V, R: " 
-            + m_rightReflectanceSensor.getVoltage() + "V"));
+        return Commands.print("L: " + m_leftReflectanceSensor.getVoltage() + "V, R: " 
+            + m_rightReflectanceSensor.getVoltage() + "V");
     }
 }
