@@ -39,7 +39,6 @@ public class Superstructure {
     // from the robot container)
     private final Trigger trg_finishSpin, trg_finishFinalMovement;
 
-    // TODO: UNDO SEE BLACK FUCKERY
     public Superstructure(XRPArm xrpArm, XRPDrivetrain xrpDrivetrain, Trigger finishSpinButton) {
         m_xrpArm = xrpArm;
         m_xrpDrivetrain = xrpDrivetrain;
