@@ -11,7 +11,7 @@ public class Superstructure {
     private final XRPArm m_xrpArm;
     private final XRPDrivetrain m_xrpDrivetrain;
 
-    public xrpState m_currentState = xrpState.IDLE;
+    private XrpState m_currentState = XrpState.IDLE;
     
     private final EventLoop m_sensorEventLoop = new EventLoop();
     private final EventLoop m_stateTrgEventLoop = new EventLoop();
@@ -20,12 +20,12 @@ public class Superstructure {
     // these are triggers that activate when different states are active
     // they are just convenient because we can AND together other triggers
     // and these so specific things only happen in specific states
-    private final Trigger stateTrg_idle = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.IDLE);
+    private final Trigger stateTrg_idle = new Trigger(m_stateTrgEventLoop, () -> m_currentState == XrpState.IDLE);
     private final Trigger stateTrg_movingForwardBeforeLine = 
-        new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_BEFORE_LINE);
-    private final Trigger stateTrg_spinning = new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.SPINNING);
+        new Trigger(m_stateTrgEventLoop, () -> m_currentState == XrpState.MOVING_BEFORE_LINE);
+    private final Trigger stateTrg_spinning = new Trigger(m_stateTrgEventLoop, () -> m_currentState == XrpState.SPINNING);
     private final Trigger stateTrg_movingForwardAfterLine =
-        new Trigger(m_stateTrgEventLoop, () -> m_currentState == xrpState.MOVING_AFTER_LINE);
+        new Trigger(m_stateTrgEventLoop, () -> m_currentState == XrpState.MOVING_AFTER_LINE);
 
     // this defines the reflectance sensors
     private final AnalogInput m_leftReflectanceSensor = new AnalogInput(0);
@@ -52,9 +52,25 @@ public class Superstructure {
         System.out.println("construct superstructure");
     }
 
+    /**
+     * Changes state and prints out when it changes state
+     * @param targetState The state that the Command will change the state machine to
+     * @return The Command that will change the state
+     */
+    public Command changeStateCmd(XrpState targetState) {
+        return Commands.runOnce(() -> {
+            if (m_currentState == targetState) {
+                return;
+            }
+            XrpState oldState = targetState;
+            m_currentState = targetState;
+            System.out.println("[SUPERSTRUCTURE] Changing state from " + oldState + " to " + m_currentState);
+        }).withName("SuperStateChange_To" + m_currentState);
+    }
+
     public void start() {
         if (stateTrg_idle.getAsBoolean()) {
-            m_currentState = xrpState.MOVING_BEFORE_LINE;
+            changeStateCmd(XrpState.MOVING_BEFORE_LINE).schedule();
         }
     }
 
@@ -63,13 +79,13 @@ public class Superstructure {
         // before activating as they will not check here - it will just
         // set state to their following state
         trg_finishFirstMovement.onTrue(
-            Commands.runOnce(() -> m_currentState = xrpState.SPINNING)
+            changeStateCmd(XrpState.SPINNING)
         );
         trg_finishSpin.onTrue(
-            Commands.runOnce(() -> m_currentState = xrpState.MOVING_AFTER_LINE)
+            changeStateCmd(XrpState.MOVING_AFTER_LINE)
         );
         trg_finishFinalMovement.onTrue(
-            Commands.runOnce(() -> m_currentState = xrpState.IDLE)
+            changeStateCmd(XrpState.IDLE)
         );
 
         // below this point everything should actually get handled based on what
@@ -127,7 +143,7 @@ public class Superstructure {
         });
     }
 
-    private enum xrpState {
+    private enum XrpState {
         IDLE(0),
         MOVING_BEFORE_LINE(1),
         SPINNING(2),
@@ -135,7 +151,7 @@ public class Superstructure {
         
         private final int m_idx;
 
-        private xrpState(int idx) {
+        private XrpState(int idx) {
             m_idx = idx;
         }
 
