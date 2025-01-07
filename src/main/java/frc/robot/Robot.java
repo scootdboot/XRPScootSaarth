@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
+        addPeriodic(m_robotContainer.superstructureFastPeriodic(), 0.00125);
     }
 
     /**
@@ -60,7 +61,12 @@ public class Robot extends TimedRobot {
         // Define it in AutonFactory
         // Add it as an AutonOption in AutonChooser
         // Call the mapCommand with the subsytems in RobotContainer
+
+        // WARNING: autonomous might not work properly while the state machine
+        // is so highly specialized
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+        m_robotContainer.startSuperstructure();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
